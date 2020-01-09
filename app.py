@@ -4,7 +4,7 @@ import urllib.error
 import json
 import datetime
 from weasyprint import HTML
-from flask import Flask, Response, render_template
+from flask import Flask, Response, render_template, abort
 
 API_KEY = os.environ.get('API_KEY', 'DEMO_KEY')
 API_URL = "https://api.nasa.gov/planetary/apod?date={}&api_key=" + API_KEY
@@ -15,6 +15,16 @@ app = Flask(__name__)
 def apod_api(date):
     with urllib.request.urlopen(API_URL.format(date)) as res:
         return json.load(res)
+
+
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('404.html'), 404
+
+
+@app.errorhandler(500)
+def internal_server_error(error):
+    return render_template('500.html'), 500
 
 
 @app.route('/')
@@ -36,9 +46,9 @@ def apod_html(date):
                                    explanation=data['explanation'],
                                    image=data['url'])
         else:
-            return render_template('404.html')
+            abort(404)
     except (ValueError, urllib.error.HTTPError):
-        return render_template('500.html')
+        abort(500)
 
 
 @app.route('/<date>/pdf')
