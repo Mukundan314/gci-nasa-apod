@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <title>NASA APOD</title>
+{% endblock %}
+
+{% block body %}
+  <input type="date" id="date" />
+  <button onclick="viewHTML()">View Picture of the Day</button>
+  <button onclick="downloadPDF()">Download PDF</button>
+
+  <script>
+    dateInput = document.getElementById("date")
+
+    function viewHTML() {
+      window.location.href = `/${dateInput.value}`
+    }
+
+    function downloadPDF() {
+      window.location.href = `/${dateInput.value}/pdf`
+    }
+  </script>
+{% endblock %}
